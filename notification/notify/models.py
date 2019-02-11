@@ -21,3 +21,8 @@ class CustomerView(models.Model):
     campaign_id = models.AutoField(primary_key=True)
     customer_email = models.OneToOneField(EmailsInfo, on_delete=models.SET_NULL, null=True)
     customer_activity = models.OneToOneField(EmailActivity, on_delete=models.SET_NULL, null=True)
+
+class EmailsUnsubscribed(models.Model):
+    mail = models.EmailField()
+    unsubscribed = models.BooleanField(default=False)
+    

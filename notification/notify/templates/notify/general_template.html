@@ -4,12 +4,30 @@
     <meta charset="UTF-8">
 </head>
 <body>
+        {% load staticfiles %}
+        <!-- <img src="{% static db_test.png %}"  width="100" height="132"> -->
+    <img src="https://homepages.cae.wisc.edu/~ece533/images/boat.png" onload="loadImage()" width="100" height="132">
+{{context.content}} has sent the below message  where message are going. from: {{context.sender_mail}}<br/><br/>
 
-{{context.content}} has sent the below message from: {{context.sender_mail}}<br/><br/>
+<br/>
+<p> <a href={{context.click_link}}>Click here to visit my website!</a> </p>
+<br/>
+<pre>{{context.mail_id}}
+<p> Here is unsubscribe button</p>
+    <a href={{context.unsubscribe_link}}>Unsubscribe Me!</a>
+</pre>
 
+<a href={{context.unsubscribe_link}}>Unsubscribe Me!</a>    
 
-<pre>{{context.mail_id}}</pre>
 
 </body>
+
+<script>
+
+function loadImage(new_link){
+    window.location.href = new_link
+}
+
+</script>
 
 </html>

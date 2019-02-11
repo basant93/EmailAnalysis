@@ -18,6 +18,6 @@ def send_mail(mail_parameter):
             mail_parameter['mail_id'] )
 
     mail.attach_alternative(html_template, 'text/html')
-    print(mail)
-    print(mail.send())
-    #mail.send()
+#     print(mail)
+#     print(mail.send())
+    return mail.send()
