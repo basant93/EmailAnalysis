@@ -8,11 +8,20 @@ class EmailActivity(models.Model):
     email_clicked = models.BooleanField(default=False)
     email_delivered = models.BooleanField(default=False)
 
+class Category(models.Model):
+    CATEGORY_CHOICES = [('WELCOME', 'WELCOME'), ('OFFER', 'OFFER'), ('SURVEY', 'SURVEY'), ('REQUEST', 'REQUEST'), \
+        ('NEWSLETTER', 'NEWSLETTER'), ('ANOUNCEMENT', 'ANOUNCEMENT')]
+    category = models.CharField(max_length=50, choices = CATEGORY_CHOICES, default='WELCOME')
+
+    def __str__(self):
+        return self.category
+
 
 class CustomerView(models.Model):
     campaign_id = models.AutoField(primary_key=True)
     campaign_subject = models.CharField(max_length=500)
     campaign_description = models.CharField(max_length=1000)
+    campaign_category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)  
 
     
 class EmailsInfo(models.Model):
@@ -28,4 +37,8 @@ class EmailsInfo(models.Model):
 class EmailsUnsubscribed(models.Model):
     mail = models.EmailField()
     unsubscribed = models.BooleanField(default=False)
+    customer = models.ForeignKey(CustomerView, on_delete=models.SET_NULL, null=True)
+    campaign_category = models.OneToOneField(Category, on_delete=models.SET_NULL, null=True)  
+
+
     

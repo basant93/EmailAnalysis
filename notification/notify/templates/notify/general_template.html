@@ -7,14 +7,13 @@
         {% load staticfiles %}
         <!-- <img src="{% static db_test.png %}"  width="100" height="132"> -->
     <img src="https://homepages.cae.wisc.edu/~ece533/images/boat.png" onload="loadImage()" width="100" height="132">
-{{context.content}} has sent the below message  where message are going. from: {{context.sender_mail}}<br/><br/>
+{{context.content}} has sent the below message  <br/><br/>
 
 <br/>
 <p> <a href={{context.click_link}}>Click here to visit my website!</a> </p>
 <br/>
-<pre>{{context.mail_id}}
-<p> Here is unsubscribe button</p>
-    <a href={{context.unsubscribe_link}}>Unsubscribe Me!</a>
+<pre>
+    <a href={{context.unsubscribe_link}}>Click here to Unsubscribe this type of mail!</a>
 </pre>
  
 <!-- <a href="{% url 'user_unsubscribe' 25 'basant.kumar93@gmail.com' %}">Unsubscribe Me!</a>     -->
