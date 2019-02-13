@@ -14,8 +14,10 @@ from django.template import Context
 from django.http import HttpResponse
 
 from notify.models import CustomerView, EmailActivity, EmailsInfo, EmailsUnsubscribed, Category
-from notify.view_models import CustomerOverview, CustomerOverviewResponse, MailPerformanceResponse
-from notify.serializer_view_models import CustomerOverViewMainSerializer, CustomerMailPerformaceMainSerializer
+from notify.view_models import CustomerOverview, CustomerOverviewResponse, MailPerformanceResponse, \
+    CustomerMailDetails
+from notify.serializer_view_models import CustomerOverViewMainSerializer, CustomerMailPerformaceMainSerializer, \
+    CustomerMailDetailsMainSerializer
 from django.db.models import Q
 
 
@@ -84,6 +86,9 @@ def send_user_email(request):
 
 @api_view(['GET'])
 def register_click_activity(request, mail_id):
+    """
+    Return click_mail_template.html page on clicking link from the mail.
+    """
 
     email_info_obj = EmailsInfo.objects.get(id=mail_id).email_activity
     email_info_obj.email_clicked = True
@@ -98,6 +103,9 @@ def register_click_activity(request, mail_id):
 
 @api_view(['GET'])
 def register_open_activity(request, mail_id):
+    """
+    Return open_mail_template.html page on opening the mail.
+    """
 
     email_info_obj = EmailsInfo.objects.get(id=mail_id).email_activity
     email_info_obj.email_opened = True
@@ -112,6 +120,7 @@ def register_open_activity(request, mail_id):
 @api_view(['GET'])
 def register_unsubscribe_activity(request, camp_id, mail_id):
     """
+    It returns unsubscribe_mail_template.html page on clicking unsubscibe link.
     Unsubscribe the email. It register campaign id of the mail unsubscribed. So admin can fetch 
     the category of mail user do not wish to receive.
     """
@@ -127,43 +136,76 @@ def register_unsubscribe_activity(request, camp_id, mail_id):
     return HttpResponse(html_template)
 
 
-@api_view(['GET'])
-def customer_overview(request):
+# @api_view(['GET'])
+# def customer_overview(request):
 
-    customer_activity_obj = CustomerView.objects.all()
+#     data = JSONParser().parse(request)
+#     email = data['email']
+#     customer_view = CustomerView.objects.get(campaign_id = campaign_id)
 
-    customer_activity_obj.email_unsubscribed = True
-    customer_activity_obj.save()
+#     email_info_obj = EmailsInfo.objects.filter(Q(user_mail_id=email))
 
-    email_unsubscribed = EmailsUnsubscribed.objects.get(mail=mail_id)
-    email_unsubscribed.unsubscribed = True
-    email_unsubscribed.save()
+#     customer_mail_details = {}
+#     customer_mail_details['mail_id'] = email_info_obj.user_mail_id
+#     customer_mail_details['email_clicked'] = email_info_obj.email_activity.email_clicked
+#     customer_mail_details['email_opened'] = email_info_obj.email_activity.email_opened
+#     customer_mail_details['email_delivered'] = email_info_obj.email_activity.email_delivered
 
-    main_response = Response(data="suceess register_unsubscribe_activity", status=status.HTTP_200_OK)
+#     main_response = CustomerOverview()
+#     main_response.success = True
+#     main_response.error_code = 0
+#     main_response.status_code = status.HTTP_200_OK
+#     main_response.data = CustomerMailDetails(customer_mail_details)
+#     serializer = CustomerMailDetailsMainSerializer(main_response)
 
-    return main_response
+#     return Response(serializer.data)
 
 
-@api_view(['GET'])
-def customer_mail_action(request, mail_id):
+@api_view(['POST'])
+def customer_mail_action(request):
+    """"
+    Request has parameters like campaign_id and user's email. It returns the action taken on the mail
+    like clicked, opened and mail delivered or not. 
+    """
 
-    email_info_obj = EmailsInfo.objects.get(id=mail_id).email_activity
-    email_info_obj.email_unsubscribed = True
-    email_info_obj.save()
+    data = JSONParser().parse(request)
+    campaign_id = data['campaign_id']
+    email = data['email']
+    customer_view = CustomerView.objects.get(campaign_id = campaign_id)
+    email_info_obj = EmailsInfo.objects.get(Q(user_mail_id=email), Q(customer = customer_view))
+
+    customer_mail_details = {}
+    customer_mail_details['mail_id'] = email_info_obj.user_mail_id
+    customer_mail_details['email_clicked'] = email_info_obj.email_activity.email_clicked
+    customer_mail_details['email_opened'] = email_info_obj.email_activity.email_opened
+    customer_mail_details['email_delivered'] = email_info_obj.email_activity.email_delivered
     
-    html_send_mail_template_path = 'notify/unsubscribe_mail_template.html'
-    html_template_context = get_template(html_send_mail_template_path)
-    html_template = html_template_context.render({})
+    try:
+        email_unsubscribed_obj = EmailsUnsubscribed.objects.get(Q(mail=email), Q(customer=customer_view))
+        customer_mail_details['email_unsubscribed'] = email_unsubscribed_obj.unsubscribed
+    except:
 
-    return HttpResponse(html_template)
+        customer_mail_details['email_unsubscribed'] = 0
+    main_response = CustomerOverview()
+    main_response.success = True
+    main_response.error_code = 0
+    main_response.status_code = status.HTTP_200_OK
+    main_response.data = CustomerMailDetails(customer_mail_details)
+    serializer = CustomerMailDetailsMainSerializer(main_response)
+
+    return Response(serializer.data)
 
 
 
 @api_view(['GET'])
 def mail_performance(request):
+    """"
+    Implements customer 360 degree view api. For each mail, it returns in response the user's data like
+    username, click_mail_count, last_mail_sent_datetime. The number of mails sent to customer.
+
+    """
 
     unique_emails = list(EmailsInfo.objects.values('user_mail_id').distinct())
-    print(unique_emails)
     customer_mail_performance = []
     for email in unique_emails:
         customer_performance = {}
@@ -184,7 +226,6 @@ def mail_performance(request):
 
         customer_mail_performance.append(customer_performance)
 
-    print(customer_mail_performance)
     main_response = CustomerOverview()
     main_response.success = True
     main_response.error_code = 0
@@ -193,14 +234,3 @@ def mail_performance(request):
     serializer = CustomerMailPerformaceMainSerializer(main_response)
 
     return Response(serializer.data)
-    # email_info_obj = EmailsInfo.objects.values('user_mail_id').annonate()
-    # email_info_obj.email_unsubscribed = True
-    # email_info_obj.save()
-    
-
-
-    # html_send_mail_template_path = 'notify/unsubscribe_mail_template.html'
-    # html_template_context = get_template(html_send_mail_template_path)
-    # html_template = html_template_context.render({})
-
-    # return HttpResponse(html_template)

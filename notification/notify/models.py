@@ -16,7 +16,6 @@ class Category(models.Model):
     def __str__(self):
         return self.category
 
-
 class CustomerView(models.Model):
     campaign_id = models.AutoField(primary_key=True)
     campaign_subject = models.CharField(max_length=500)

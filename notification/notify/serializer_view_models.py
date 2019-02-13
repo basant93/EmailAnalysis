@@ -31,3 +31,19 @@ class CustomerMailPerformaceMainSerializer(serializers.Serializer):
     error_code = serializers.IntegerField()
     status_code = serializers.CharField()
     data = MailPerformaceInfoSerializer()
+
+
+class CustomerMailDetailsSerializer(serializers.Serializer):
+    mail_id = serializers.EmailField()
+    email_clicked = serializers.IntegerField()
+    email_opened = serializers.IntegerField()
+    email_delivered = serializers.IntegerField()
+    email_unsubscribed = serializers.IntegerField()
+
+
+
+class CustomerMailDetailsMainSerializer(serializers.Serializer):
+    success = serializers.BooleanField()
+    error_code = serializers.IntegerField()
+    status_code = serializers.CharField()
+    data = CustomerMailDetailsSerializer()

@@ -50,3 +50,19 @@ class MailPerformanceResponse(object):
             ret_val.append(mail_result)
         
         return ret_val
+
+
+class CustomerMailDetails(object):
+
+    mail_id = None
+    email_clicked = None
+    email_opened = None
+    email_delivered = None
+    email_unsubscribed = None
+
+    def __init__(self, customer_mail_details):
+        self.mail_id = customer_mail_details['mail_id']
+        self.email_clicked = customer_mail_details['email_clicked']
+        self.email_opened = customer_mail_details['email_opened']
+        self.email_delivered = customer_mail_details['email_delivered']
+        self.email_unsubscribed = customer_mail_details['email_unsubscribed']
