@@ -6,9 +6,12 @@ from notify.utils import validate_user_email
 
 
 def send_mail(mail_parameter):
+    """
+    Utility function to Send mails to a user.  From mail id is settings.EMAIL_HOST_USER
+    Renders the template at path html_template_content_path. 
+    """
 
     html_template_context = get_template(mail_parameter['html_template_content_path'])
-    #context = Context({'context' : mail_parameter})
     context = {'context' : mail_parameter}
 
     html_template = html_template_context.render(context)
@@ -19,11 +22,11 @@ def send_mail(mail_parameter):
             mail_parameter['to_mail_id'] )
 
     mail.attach_alternative(html_template, 'text/html')
-#     print(mail)
-#     print(mail.send())
+
     return mail.send()
 
 
+#Removes invalid email and duplicate mail ids.
 def valid_email_response(user_mails):
     user_email_content = []
     check_dup_mails = []

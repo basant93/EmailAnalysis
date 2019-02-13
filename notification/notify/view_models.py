@@ -36,9 +36,7 @@ class MailPerformanceResponse(object):
         ret_val = []
 
         for mail_response in mails_performace:
-            print('-----------------')
-            print(mail_response)
-            print("######################")
+         
             mail_result = AllCustomerMails()
             mail_result.user_email = mail_response['user_email']
             mail_result.username = mail_response['username']

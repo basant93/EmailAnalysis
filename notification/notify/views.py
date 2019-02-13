@@ -3,12 +3,10 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework.decorators import api_view
 from rest_framework import status
-
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from notify.helpers import send_mail, valid_email_response
 from rest_framework.response import Response
-
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
@@ -41,7 +39,7 @@ def send_user_email(request):
 
     html_template_content_path = 'notify/general_template.html'
     user_email_content = valid_email_response(data['user_emails'])
-    print(user_email_content)
+
     count = 0
     total_mails = 0
 
@@ -135,30 +133,6 @@ def register_unsubscribe_activity(request, camp_id, mail_id):
 
     return HttpResponse(html_template)
 
-
-# @api_view(['GET'])
-# def customer_overview(request):
-
-#     data = JSONParser().parse(request)
-#     email = data['email']
-#     customer_view = CustomerView.objects.get(campaign_id = campaign_id)
-
-#     email_info_obj = EmailsInfo.objects.filter(Q(user_mail_id=email))
-
-#     customer_mail_details = {}
-#     customer_mail_details['mail_id'] = email_info_obj.user_mail_id
-#     customer_mail_details['email_clicked'] = email_info_obj.email_activity.email_clicked
-#     customer_mail_details['email_opened'] = email_info_obj.email_activity.email_opened
-#     customer_mail_details['email_delivered'] = email_info_obj.email_activity.email_delivered
-
-#     main_response = CustomerOverview()
-#     main_response.success = True
-#     main_response.error_code = 0
-#     main_response.status_code = status.HTTP_200_OK
-#     main_response.data = CustomerMailDetails(customer_mail_details)
-#     serializer = CustomerMailDetailsMainSerializer(main_response)
-
-#     return Response(serializer.data)
 
 
 @api_view(['POST'])

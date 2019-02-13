@@ -38,7 +38,6 @@ class EmailsUnsubscribed(models.Model):
     mail = models.EmailField()
     unsubscribed = models.BooleanField(default=False)
     customer = models.ForeignKey(CustomerView, on_delete=models.SET_NULL, null=True)
-    #campaign_category = models.OneToOneField(Category, on_delete=models.SET_NULL, null=True)  
 
 
     
