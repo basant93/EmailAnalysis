@@ -31,14 +31,15 @@ class EmailsInfo(models.Model):
     sent_datetime = models.DateTimeField(auto_now=True)
     user_name = models.CharField(max_length=255)
     customer = models.ForeignKey(CustomerView, on_delete=models.CASCADE, null=True)
-    email_activity = models.OneToOneField(EmailActivity, on_delete=models.SET_NULL, null=True)
+    email_activity = models.ForeignKey(EmailActivity, on_delete=models.SET_NULL, null=True)
+
 
 
 class EmailsUnsubscribed(models.Model):
     mail = models.EmailField()
     unsubscribed = models.BooleanField(default=False)
     customer = models.ForeignKey(CustomerView, on_delete=models.SET_NULL, null=True)
-    campaign_category = models.OneToOneField(Category, on_delete=models.SET_NULL, null=True)  
+    #campaign_category = models.OneToOneField(Category, on_delete=models.SET_NULL, null=True)  
 
 
     
